@@ -15,7 +15,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
         <nav class="navbar navbar-expand-lg">
           <a class="navbar-brand" href="#">
             <i class="fas fa-microphone-alt" style="font-size: 28px; color: var(--primary);"></i>
-            <span style="font-weight: 700; font-size: 24px; margin-left: 10px;">VoiceAI</span>
+            <span style="font-weight: 700; font-size: 24px; margin-left: 10px;">Awaaz AI</span>
           </a>
           <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
             <span class="navbar-toggler-icon"></span>
@@ -185,9 +185,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
           </div>
         </div>
 
-        <!-- NEW: Voice Cloning Card -->
+        <!-- Voice Cloning Card with Hugging Face API -->
         <div class="demo-card mb-4" data-aos="fade-up">
-          <h3 class="demo-title"><i class="fas fa-clone me-2"></i>Voice Cloning Studio</h3>
+          <h3 class="demo-title"><i class="fas fa-clone me-2"></i>Voice Cloning Studio (Hugging Face API)</h3>
           <div class="row">
             <div class="col-md-6">
               <div class="cloning-upload-area" (click)="triggerFileUpload()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
@@ -206,8 +206,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
               <div class="voice-badges mt-3">
                 <label class="form-label">Or try sample voices:</label>
                 <div>
-                  <span class="voice-badge" *ngFor="let celebrity of celebrities" (click)="loadCelebrityVoice(celebrity)">
-                    🎭 {{celebrity}}
+                  <span class="voice-badge" *ngFor="let speaker of sampleSpeakers" (click)="loadSampleSpeaker(speaker)">
+                    🎭 {{speaker}}
                   </span>
                 </div>
               </div>
@@ -215,10 +215,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
             <div class="col-md-6">
               <textarea [(ngModel)]="cloneText" rows="3" class="form-control" placeholder="Enter text to speak in cloned voice..."></textarea>
               <div class="mt-3">
-                <select [(ngModel)]="cloneLanguage" class="form-control mb-2">
-                  <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
+                <select [(ngModel)]="selectedSpeakerName" class="form-control mb-2">
+                  <option *ngFor="let speaker of speakerNames" [value]="speaker">{{speaker}}</option>
                 </select>
-                <button class="ud-main-btn ud-primary-btn w-100" (click)="cloneVoice()" [disabled]="isCloning">
+                <button class="ud-main-btn ud-primary-btn w-100" (click)="cloneVoiceWithHuggingFace()" [disabled]="isCloning">
                   <i class="fas" [class.fa-spinner]="isCloning" [class.fa-magic]="!isCloning"></i>
                   {{isCloning ? 'Cloning & Generating...' : 'Clone Voice & Generate'}}
                 </button>
@@ -236,7 +236,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
           </div>
         </div>
 
-        <!-- NEW: Voice Change for Video Card -->
+        <!-- Voice Change for Video Card -->
         <div class="demo-card mb-4" data-aos="fade-up">
           <h3 class="demo-title"><i class="fas fa-video me-2"></i>Voice Change for Video</h3>
           <div class="row">
@@ -284,7 +284,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
           </div>
         </div>
 
-        <!-- NEW: Simple AI Video Generation Card -->
+        <!-- Simple AI Video Generation Card -->
         <div class="demo-card mb-4" data-aos="fade-up">
           <h3 class="demo-title"><i class="fas fa-play-circle me-2"></i>Simple AI Video Generator</h3>
           <div class="row">
@@ -418,7 +418,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
         <div class="row">
           <div class="col-lg-6" data-aos="fade-right">
             <h2>Ready to transform your voice experience?</h2>
-            <p class="mt-3">Join thousands of creators, developers, and businesses using VoiceAI Suite.</p>
+            <p class="mt-3">Join thousands of creators, developers, and businesses using Awaaz AI Suite.</p>
             <div class="mt-4">
               <div class="d-flex align-items-center mb-3">
                 <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
@@ -455,7 +455,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
         <div class="row">
           <div class="col-lg-4">
             <i class="fas fa-microphone-alt fs-1 mb-3"></i>
-            <p>VoiceAI Suite - Complete Voice AI Platform for creators and businesses.</p>
+            <p>Awaaz AI Suite - Complete Voice AI Platform for creators and businesses.</p>
           </div>
           <div class="col-lg-2">
             <h5>Product</h5>
@@ -483,7 +483,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
         </div>
         <hr class="mt-4">
         <div class="text-center">
-          <p class="mb-0">© 2024 VoiceAI Suite. All rights reserved.</p>
+          <p class="mb-0">© 2024 Awaaz AI Suite. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -492,6 +492,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 })
 export class AppComponent implements OnInit {
   navbarOpen = false;
+  
+  // API Configuration
+  private readonly HF_API_URL = 'https://shkahmed-backend.hf.space/synthesize';
   
   features = [
     { icon: 'fas fa-volume-up', title: 'Text-to-Speech (TTS)', description: 'Convert any text into natural, human-like speech with 100+ voices in 50+ languages.', badge: '200+ Voices', type: 'tts' },
@@ -547,7 +550,19 @@ export class AppComponent implements OnInit {
     { value: 'alien', label: 'Alien' }
   ];
 
-  celebrities = ['Morgan Freeman', 'Scarlett Johansson', 'David Attenborough'];
+  // Voice Cloning Properties
+  sampleSpeakers = ['kajal', 'priya', 'raju', 'amit'];
+  speakerNames = ['kajal', 'priya', 'raju', 'amit', 'default'];
+  selectedSpeakerName = 'kajal';
+  
+  cloneText = '';
+  cloneLanguage = 'en';
+  cloneStatus = '';
+  isCloning = false;
+  cloneAudioUrl: string | null = null;
+  cloneAudioBlob: Blob | null = null;
+  selectedFile: File | null = null;
+  selectedFileName: string = '';
 
   // TTS Properties
   ttsText = "Oh yes, the deep sea: nature's basement. Home to creatures so bizarre, even nightmares are like 'Nah, I'll pass.'";
@@ -562,16 +577,6 @@ export class AppComponent implements OnInit {
   speakerWavFile: File | null = null;
   speakerWavName: string = '';
   private audioElement: HTMLAudioElement | null = null;
-  
-  // Voice Cloning Properties
-  cloneText = '';
-  cloneLanguage = 'en';
-  cloneStatus = '';
-  isCloning = false;
-  cloneAudioUrl: string | null = null;
-  cloneAudioBlob: Blob | null = null;
-  selectedFile: File | null = null;
-  selectedFileName: string = '';
   
   // Video Voice Change Properties
   selectedVideoFile: File | null = null;
@@ -634,437 +639,4 @@ export class AppComponent implements OnInit {
   }
 
   selectVoicePreset(presetId: string) {
-    this.selectedVoicePreset = presetId;
-    this.ttsStatus = `Voice preset changed to: ${this.voicePresets.find(p => p.id === presetId)?.name}`;
-    setTimeout(() => {
-      if (this.ttsStatus !== 'Generating...') this.ttsStatus = '';
-    }, 2000);
-  }
-
-  selectEmotion(emotionId: string) {
-    this.selectedEmotion = emotionId;
-    this.ttsStatus = `Emotion changed to: ${this.emotions.find(e => e.id === emotionId)?.name}`;
-    setTimeout(() => {
-      if (this.ttsStatus !== 'Generating...') this.ttsStatus = '';
-    }, 2000);
-  }
-
-  onSpeakerWavSelected(event: any) {
-    this.speakerWavFile = event.target.files[0];
-    this.speakerWavName = this.speakerWavFile?.name || '';
-  }
-
-  async generateEmotionTTS() {
-    if (!this.ttsText.trim()) {
-      alert('Please enter some text');
-      return;
-    }
-
-    this.isGenerating = true;
-    this.ttsStatus = 'Generating emotional speech...';
-    this.audioUrl = null;
-
-    try {
-      const formData = new FormData();
-      formData.append('text', this.ttsText);
-      formData.append('language', this.selectedLanguage);
-      formData.append('emotion', this.selectedEmotion);
-      formData.append('voice_preset', this.selectedVoicePreset);
-      formData.append('speed', '1.0');
-      formData.append('pitch', '1.0');
-
-      const response = await this.http.post('http://localhost:8000/synthesize-with-emotion', formData, {
-        responseType: 'blob',
-        observe: 'response'
-      }).toPromise();
-
-      if (response && response.body) {
-        this.audioBlob = response.body;
-        this.audioUrl = URL.createObjectURL(this.audioBlob);
-        this.ttsStatus = 'Audio generated successfully! Playing...';
-        this.playAudio();
-      } else {
-        throw new Error('No audio data received');
-      }
-    } catch (error: any) {
-      console.error('TTS API Error:', error);
-      this.ttsStatus = `Generation failed: ${error.message || 'Check if TTS server is running'}`;
-    } finally {
-      this.isGenerating = false;
-    }
-  }
-
-  async generateClonedTTS() {
-    if (!this.ttsText.trim()) {
-      alert('Please enter some text');
-      return;
-    }
-
-    if (!this.speakerWavFile) {
-      alert('Please upload a voice sample for cloning');
-      return;
-    }
-
-    this.isGenerating = true;
-    this.ttsStatus = 'Generating cloned voice speech...';
-
-    try {
-      const formData = new FormData();
-      formData.append('text', this.ttsText);
-      formData.append('language', this.selectedLanguage);
-      formData.append('speaker_wav', this.speakerWavFile);
-
-      const response = await this.http.post('http://localhost:8000/synthesize', formData, {
-        responseType: 'blob',
-        observe: 'response'
-      }).toPromise();
-
-      if (response && response.body) {
-        this.audioBlob = response.body;
-        this.audioUrl = URL.createObjectURL(this.audioBlob);
-        this.ttsStatus = 'Cloned voice generated successfully! Playing...';
-        this.playAudio();
-      } else {
-        throw new Error('No audio data received');
-      }
-    } catch (error: any) {
-      console.error('Clone API Error:', error);
-      this.ttsStatus = `Cloning failed: ${error.message}`;
-    } finally {
-      this.isGenerating = false;
-    }
-  }
-
-  playAudio() {
-    if (this.audioUrl) {
-      this.stopAudio();
-      this.audioElement = new Audio(this.audioUrl);
-      this.audioElement.play();
-      this.isPlaying = true;
-      this.audioElement.onended = () => {
-        this.isPlaying = false;
-      };
-    }
-  }
-
-  stopAudio() {
-    if (this.audioElement) {
-      this.audioElement.pause();
-      this.audioElement.currentTime = 0;
-      this.isPlaying = false;
-    }
-  }
-
-  downloadAudio() {
-    if (this.audioBlob && this.audioUrl) {
-      const a = document.createElement('a');
-      a.href = this.audioUrl;
-      a.download = `tts_${this.selectedVoicePreset}_${this.selectedEmotion}_${Date.now()}.wav`;
-      a.click();
-    } else {
-      alert('No audio generated yet. Please generate speech first.');
-    }
-  }
-
-  clearAudio() {
-    this.stopAudio();
-    this.audioUrl = null;
-    this.audioBlob = null;
-    this.ttsStatus = '';
-  }
-
-  // Voice Cloning Functions
-  triggerFileUpload() {
-    const fileInput = document.querySelector('#fileInput') as HTMLInputElement;
-    fileInput?.click();
-  }
-
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    const files = event.dataTransfer?.files;
-    if (files && files[0]) {
-      this.selectedFile = files[0];
-      this.selectedFileName = this.selectedFile.name;
-    }
-  }
-
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    this.selectedFileName = this.selectedFile?.name || '';
-  }
-
-  clearSelectedFile() {
-    this.selectedFile = null;
-    this.selectedFileName = '';
-    this.cloneAudioUrl = null;
-    this.cloneStatus = '';
-  }
-
-  loadCelebrityVoice(celebrity: string) {
-    this.cloneText = `Hello, this is ${celebrity}'s voice. Amazing, isn't it?`;
-    this.cloneStatus = `<div class="alert alert-info">${celebrity} voice template loaded! Click "Clone Voice & Generate" to hear it.</div>`;
-  }
-
-  async cloneVoice() {
-    if (!this.cloneText.trim()) {
-      alert('Please enter text to speak');
-      return;
-    }
-
-    if (!this.selectedFile) {
-      alert('Please upload a voice sample for cloning');
-      return;
-    }
-
-    this.isCloning = true;
-    this.cloneStatus = '<div class="alert alert-info">Cloning voice and generating speech...</div>';
-
-    try {
-      const formData = new FormData();
-      formData.append('text', this.cloneText);
-      formData.append('language', this.cloneLanguage);
-      formData.append('speaker_wav', this.selectedFile);
-
-      const response = await this.http.post('http://localhost:8000/synthesize', formData, {
-        responseType: 'blob',
-        observe: 'response'
-      }).toPromise();
-
-      if (response && response.body) {
-        this.cloneAudioBlob = response.body;
-        this.cloneAudioUrl = URL.createObjectURL(this.cloneAudioBlob);
-        this.cloneStatus = '<div class="alert alert-success">Voice cloned successfully! Audio ready.</div>';
-        
-        // Auto-play
-        const audio = new Audio(this.cloneAudioUrl);
-        audio.play();
-      }
-    } catch (error: any) {
-      console.error('Clone error:', error);
-      this.cloneStatus = `<div class="alert alert-danger">Cloning failed: ${error.message}</div>`;
-    } finally {
-      this.isCloning = false;
-    }
-  }
-
-  downloadCloneAudio() {
-    if (this.cloneAudioBlob && this.cloneAudioUrl) {
-      const a = document.createElement('a');
-      a.href = this.cloneAudioUrl;
-      a.download = `cloned_voice_${Date.now()}.wav`;
-      a.click();
-    }
-  }
-
-  // Video Voice Change Functions
-  triggerVideoUpload() {
-    const videoInput = document.querySelector('#videoInput') as HTMLInputElement;
-    videoInput?.click();
-  }
-
-  onDragOverVideo(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  onDropVideo(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    const files = event.dataTransfer?.files;
-    if (files && files[0] && files[0].type.startsWith('video/')) {
-      this.selectedVideoFile = files[0];
-      this.selectedVideoName = this.selectedVideoFile.name;
-      this.videoPreviewUrl = URL.createObjectURL(this.selectedVideoFile);
-    }
-  }
-
-  onVideoSelected(event: any) {
-    this.selectedVideoFile = event.target.files[0];
-    this.selectedVideoName = this.selectedVideoFile?.name || '';
-    if (this.selectedVideoFile) {
-      this.videoPreviewUrl = URL.createObjectURL(this.selectedVideoFile);
-    }
-  }
-
-  async changeVideoVoice() {
-    if (!this.selectedVideoFile) {
-      alert('Please upload a video file first');
-      return;
-    }
-
-    this.isProcessingVideo = true;
-
-    // Simulate video voice change processing
-    setTimeout(() => {
-      this.isProcessingVideo = false;
-      alert(`Voice changed to ${this.videoVoiceEffect} effect! (Demo - In production, this would process the video)`);
-    }, 3000);
-  }
-
-  downloadProcessedVideo() {
-    if (this.processedVideoBlob) {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(this.processedVideoBlob);
-      a.download = `voice_changed_video_${Date.now()}.mp4`;
-      a.click();
-    } else {
-      alert('No processed video available. Please change voice first.');
-    }
-  }
-
-  // Simple Video Generation Functions
-  async generateSimpleVideo() {
-    if (!this.videoScript.trim()) {
-      alert('Please enter a video script');
-      return;
-    }
-
-    this.isGeneratingVideo = true;
-    this.videoGenerationStatus = 'Generating your AI video... This may take a moment.';
-
-    // First generate TTS audio for the video
-    try {
-      const formData = new FormData();
-      formData.append('text', this.videoScript);
-      formData.append('language', this.videoLanguage);
-      formData.append('emotion', this.videoEmotion);
-      formData.append('voice_preset', this.videoVoicePreset);
-      formData.append('speed', '1.0');
-      formData.append('pitch', '1.0');
-
-      const audioResponse = await this.http.post('http://localhost:8000/synthesize-with-emotion', formData, {
-        responseType: 'blob',
-        observe: 'response'
-      }).toPromise();
-
-      if (audioResponse && audioResponse.body) {
-        // Simulate video generation with the audio
-        setTimeout(() => {
-          // Create a simple video representation (in production, this would combine audio with avatar)
-          const videoBlob = new Blob([this.videoScript], { type: 'video/mp4' });
-          this.generatedVideoBlob = videoBlob;
-          this.generatedVideoUrl = URL.createObjectURL(videoBlob);
-          this.videoGenerationStatus = 'Video generated successfully!';
-          this.isGeneratingVideo = false;
-          
-          // Play the audio
-          const audio = new Audio(URL.createObjectURL(audioResponse.body!));
-          audio.play();
-        }, 2000);
-      }
-    } catch (error: any) {
-      console.error('Video generation error:', error);
-      this.videoGenerationStatus = `Video generation failed: ${error.message}`;
-      this.isGeneratingVideo = false;
-    }
-  }
-
-  downloadGeneratedVideo() {
-    if (this.generatedVideoBlob && this.generatedVideoUrl) {
-      const a = document.createElement('a');
-      a.href = this.generatedVideoUrl;
-      a.download = `ai_generated_video_${Date.now()}.mp4`;
-      a.click();
-    } else {
-      alert('No video generated yet. Please generate a video first.');
-    }
-  }
-
-  // STT Functions
-  toggleRecording() {
-    if (!this.isRecording) {
-      this.startRecording();
-    } else {
-      this.stopRecording();
-    }
-  }
-
-  startRecording() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
-        this.mediaRecorder = new MediaRecorder(stream);
-        this.audioChunks = [];
-
-        this.mediaRecorder.ondataavailable = (event: any) => {
-          this.audioChunks.push(event.data);
-        };
-
-        this.mediaRecorder.onstop = async () => {
-          this.sttResult = "Transcription would appear here. Connect to your STT API endpoint.";
-          alert('Recording complete!');
-        };
-
-        this.mediaRecorder.start();
-        this.isRecording = true;
-      })
-      .catch(err => {
-        console.error('Microphone access denied:', err);
-        alert('Please allow microphone access to use STT feature.');
-      });
-  }
-
-  stopRecording() {
-    if (this.mediaRecorder) {
-      this.mediaRecorder.stop();
-      this.isRecording = false;
-    }
-  }
-
-  uploadAudio() {
-    alert('Upload audio for transcription. Connect to STT API at http://localhost:8000/transcribe');
-  }
-
-  // Voice Change Functions
-  startVoiceChange() {
-    this.voiceChangeStatus = `
-      <div class="alert alert-success">
-        Voice changer active! Effect: ${this.selectedEffect}
-      </div>
-    `;
-
-    this.voiceChangeInterval = setInterval(() => {
-      this.voiceChangeStatus = `
-        <div class="alert alert-info">
-          Voice effect applied: ${this.selectedEffect} (simulated)
-        </div>
-      `;
-    }, 3000);
-  }
-
-  stopVoiceChange() {
-    if (this.voiceChangeInterval) {
-      clearInterval(this.voiceChangeInterval);
-    }
-    this.voiceChangeStatus = `
-      <div class="alert alert-secondary">
-        Voice changer stopped
-      </div>
-    `;
-  }
-
-  sendMessage() {
-    if (this.contactName && this.contactEmail && this.contactMessage) {
-      alert('Thank you for your message! Our team will get back to you soon.');
-      this.contactName = '';
-      this.contactEmail = '';
-      this.contactMessage = '';
-    } else {
-      alert('Please fill in all fields.');
-    }
-  }
-
-  subscribeNewsletter() {
-    if (this.newsletterEmail) {
-      alert(`Subscribed with email: ${this.newsletterEmail}`);
-      this.newsletterEmail = '';
-    } else {
-      alert('Please enter an email address.');
-    }
-  }
-}
+    this.selectedVoicePreset = preset
