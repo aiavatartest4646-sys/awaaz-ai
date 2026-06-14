@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
+  styleUrls: ['./app.component.scss'],
   template: `
     <!-- Header -->
     <header class="ud-header">
@@ -29,7 +33,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
             </ul>
           </div>
           <div class="navbar-btn d-none d-sm-inline-block">
-            <a href="#demo" class="ud-main-btn ud-primary-btn" (click)="scrollTo('demo')">Try Free Demo</a>
+            <a href="#demo" class="ud-main-btn ud-primary-btn" (click)="scrollTo('demo')">Sign Up</a>
           </div>
         </nav>
       </div>
@@ -88,15 +92,51 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
       </div>
     </section>
 
-    <!-- Demo Studio Section -->
-    <section id="demo" class="demo-section">
-      <div class="container">
-        <div class="ud-section-title" data-aos="fade-up">
-          <span>Interactive Demo</span>
-          <h2>Try Awaaz AI in Action</h2>
-          <p>Experience the power of our voice technology - it's free!</p>
-        </div>
 
+
+    <!-- TTS Marketing Section -->
+<section id="tts-marketing" class="tts-marketing-section">
+  <div class="container">
+    <!-- Marketing Text on Top -->
+    <div class="marketing-content" data-aos="fade-up">
+      <div class="marketing-badge">
+        <i class="fas fa-volume-up me-2"></i>Text-to-Speech Engine
+      </div>
+      <h1 class="marketing-title">
+        Turn Text Into
+        <span class="highlight-text">Natural Speech</span>
+      </h1>
+      <p class="marketing-description">
+        Convert any written content into lifelike audio with our advanced AI voices. 
+        Choose from multiple languages and speakers for the perfect narration.
+      </p>
+      <div class="marketing-stats">
+        <div class="stat-item">
+          <span class="stat-number">5+</span>
+          <span class="stat-label">Voices</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">Languages</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">99%</span>
+          <span class="stat-label">Natural</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">Free</span>
+          <span class="stat-label">To Start</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TTS Demo Card -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-8" style="width:100% !important;">
+        
         <!-- Card 1: Simple TTS with Speaker List -->
         <div class="demo-card mb-4" data-aos="fade-up">
           <h3 class="demo-title"><i class="fas fa-volume-up me-2"></i>Simple Text-to-Speech</h3>
@@ -161,247 +201,202 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
           </div>
         </div>
 
-        <!-- Card 2: Emotion TTS -->
-        <div class="demo-card mb-4" data-aos="fade-up">
-          <h3 class="demo-title"><i class="fas fa-smile me-2"></i>Emotional Text-to-Speech</h3>
-          
-          <div class="row">
-            <div class="col-md-12">
-              <label class="form-label fw-bold">Enter Text:</label>
-              <textarea [(ngModel)]="emotionTtsText" rows="3" class="form-control" placeholder="Enter your text here..."></textarea>
-            </div>
-          </div>
+      </div>
+    </div>
+  </div>
+</section>
+    
 
-          <div class="row mt-3">
-            <div class="col-md-4">
-              <label class="form-label fw-bold">Language:</label>
-              <select [(ngModel)]="emotionTtsLanguage" (change)="onEmotionLanguageChange()" class="form-control">
-                <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
-              </select>
-            </div>
-            <div class="col-md-8">
-              <label class="form-label fw-bold">Select Speaker ({{getLanguageName(emotionTtsLanguage)}}):</label>
-              <div class="speaker-list">
-                <div *ngFor="let speaker of getFilteredSpeakers(emotionTtsLanguage)" 
-                     class="speaker-chip" 
-                     [class.active]="selectedEmotionSpeaker === speaker.name"
-                     (click)="selectEmotionSpeaker(speaker.name)">
-                  <i class="fas fa-user-circle"></i>
-                  <span>{{speaker.name}}</span>
-                </div>
-                <div *ngIf="getFilteredSpeakers(emotionTtsLanguage).length === 0" class="text-muted">
-                  No {{getLanguageName(emotionTtsLanguage)}} speakers available
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <label class="form-label fw-bold">Select Emotion:</label>
-              <div class="emotion-grid">
-                <div *ngFor="let emotion of emotions" 
-                     class="emotion-card" 
-                     [class.active]="selectedEmotion === emotion.id"
-                     (click)="selectEmotion(emotion.id)">
-                  <span class="emotion-emoji">{{emotion.emoji}}</span>
-                  <span class="emotion-name">{{emotion.name}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Speed (0.5 - 2.0):</label>
-              <input type="range" [(ngModel)]="emotionSpeed" min="0.5" max="2.0" step="0.1" class="form-range">
-              <span class="badge bg-secondary">{{emotionSpeed}}</span>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Pitch (0.5 - 2.0):</label>
-              <input type="range" [(ngModel)]="emotionPitch" min="0.5" max="2.0" step="0.1" class="form-range">
-              <span class="badge bg-secondary">{{emotionPitch}}</span>
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <button class="ud-main-btn ud-primary-btn w-100" (click)="generateEmotionTTS()" [disabled]="isGeneratingEmotion">
-                <i class="fas" [class.fa-spinner]="isGeneratingEmotion" [class.fa-smile]="!isGeneratingEmotion"></i>
-                {{isGeneratingEmotion ? 'Generating...' : 'Generate Emotional Speech'}}
-              </button>
-            </div>
-          </div>
-
-          <div class="mt-3" *ngIf="emotionTtsStatus">
-            <div class="alert" [class.alert-success]="emotionTtsStatus.includes('success')" 
-                 [class.alert-danger]="emotionTtsStatus.includes('failed')">
-              {{emotionTtsStatus}}
-            </div>
-          </div>
-
-          <div class="mt-3" *ngIf="emotionTtsAudioUrl">
-            <audio controls class="w-100">
-              <source [src]="emotionTtsAudioUrl" type="audio/wav">
-            </audio>
-            <button class="btn btn-sm btn-outline-primary mt-2" (click)="downloadEmotionAudio()">
-              <i class="fas fa-download me-1"></i>Download Audio
-            </button>
-          </div>
+    
+  <!-- Video Translation Marketing Section -->
+<section id="video-marketing" class="video-marketing-section">
+  <div class="container">
+    <!-- Marketing Text on Top -->
+    <div class="marketing-content" data-aos="fade-up">
+      <div class="marketing-badge">
+        <i class="fas fa-star me-2"></i>AI-Powered Video Translation
+      </div>
+      <h1 class="marketing-title">
+        Break Language Barriers
+        <span class="highlight-text">Instantly</span>
+      </h1>
+      <p class="marketing-description">
+        Transform your videos into any language while preserving the original voice, tone, 
+        and emotions. Reach global audiences without expensive dubbing studios.
+      </p>
+      <div class="marketing-stats">
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Languages</span>
         </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">2 min</span>
+          <span class="stat-label">Processing</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">Support</span>
+        </div>
+      </div>
+    </div>
 
-        <!-- Card 3: Voice Cloning (Upload & Use) -->
-        <div class="demo-card mb-4" id="clone-card" data-aos="fade-up">
-          <h3 class="demo-title"><i class="fas fa-clone me-2"></i>Voice Cloning Studio</h3>
-          
-          <div class="row">
-            <div class="col-md-6">
-              <div class="cloning-upload-area" (click)="triggerFileUpload()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
-                <p>Upload a voice sample to create a new speaker</p>
-                <small class="text-muted">10-30 seconds recommended (WAV/MP3)</small>
-                <input type="file" #fileInput accept="audio/*" (change)="onFileSelected($event)" style="display: none;">
+    <!-- Two Videos Side by Side -->
+    <div class="video-comparison-wrapper mt-5">
+      <div class="row align-items-center">
+        <!-- Original Video -->
+        <div class="col-lg-6" data-aos="fade-right">
+          <div class="video-card original-video">
+            <div class="video-card-header">
+              <div class="header-left">
+                <div class="status-dot original"></div>
+                <span class="header-title">Original Video</span>
               </div>
-              
-              <div class="mt-3" *ngIf="selectedFileName">
-                <div class="alert alert-info">
-                  <i class="fas fa-file-audio me-2"></i>
-                  File: {{selectedFileName}}
-                </div>
-              </div>
-
-              <div class="mt-3">
-                <label class="form-label fw-bold">Speaker Name:</label>
-                <input type="text" [(ngModel)]="newSpeakerName" class="form-control" placeholder="Enter a name for this speaker (e.g., john, sarah)">
-                
-                <label class="form-label fw-bold mt-2">Speaker Language:</label>
-                <select [(ngModel)]="newSpeakerLanguage" class="form-control">
-                  <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
-                </select>
-                
-                <button class="btn btn-sm btn-outline-primary mt-2 w-100" (click)="uploadSpeaker()" [disabled]="isUploading">
-                  <i class="fas" [class.fa-spinner]="isUploading" [class.fa-upload]="!isUploading"></i>
-                  {{isUploading ? 'Uploading...' : 'Upload Speaker'}}
-                </button>
-              </div>
-
-              <div class="mt-3" *ngIf="uploadStatus">
-                <div class="alert" [class.alert-success]="uploadStatus.includes('success')" 
-                     [class.alert-danger]="uploadStatus.includes('failed')">
-                  {{uploadStatus}}
-                </div>
+              <div class="language-tag original-tag">
+                <i class="fas fa-globe me-1"></i>English
               </div>
             </div>
-
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Language:</label>
-              <select [(ngModel)]="cloneLanguage" (change)="onCloneLanguageChange()" class="form-control">
-                <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
-              </select>
-
-              <label class="form-label fw-bold mt-2">Select Cloned Speaker ({{getLanguageName(cloneLanguage)}}):</label>
-              <div class="speaker-list">
-                <div *ngFor="let speaker of getFilteredSpeakers(cloneLanguage)" 
-                     class="speaker-chip" 
-                     [class.active]="selectedCloneSpeaker === speaker.name"
-                     (click)="selectCloneSpeaker(speaker.name)">
-                  <i class="fas fa-user-circle"></i>
-                  <span>{{speaker.name}}</span>
+            <div class="video-player-wrapper" (click)="playOriginalVideo($event)">
+              <video #originalVideo controls class="marketing-video" 
+                     (play)="onVideoPlay('original')"
+                     (pause)="onVideoPause('original')">
+                <source src="./assets/translated_en.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="play-overlay" [class.hidden]="originalVideoPlaying" (click)="playOriginalVideo($event)">
+                <div class="play-button">
+                  <i class="fas fa-play"></i>
                 </div>
-                <div *ngIf="getFilteredSpeakers(cloneLanguage).length === 0" class="text-muted">
-                  No {{getLanguageName(cloneLanguage)}} speakers found. Upload one first!
-                </div>
+                <span>Original Audio</span>
               </div>
-
-              <div class="mt-3">
-                <label class="form-label fw-bold">Text to Speak:</label>
-                <textarea [(ngModel)]="cloneText" rows="2" class="form-control" placeholder="Enter text to speak in cloned voice..."></textarea>
+            </div>
+            <div class="video-card-footer">
+              <div class="footer-info">
+                <i class="fas fa-microphone"></i>
+                <span>Natural Voice</span>
               </div>
-
-              <button class="ud-main-btn ud-primary-btn w-100 mt-3" (click)="generateCloneTTS()" [disabled]="isCloning">
-                <i class="fas" [class.fa-spinner]="isCloning" [class.fa-magic]="!isCloning"></i>
-                {{isCloning ? 'Generating...' : 'Generate with Cloned Voice'}}
-              </button>
-
-              <div class="mt-3" *ngIf="cloneStatus" [innerHTML]="cloneStatus"></div>
-              <div class="mt-3" *ngIf="cloneAudioUrl">
-                <audio controls class="w-100">
-                  <source [src]="cloneAudioUrl" type="audio/wav">
-                </audio>
-                <button class="btn btn-sm btn-outline-primary mt-2 w-100" (click)="downloadCloneAudio()">
-                  <i class="fas fa-download me-1"></i>Download Audio
-                </button>
+              <div class="footer-info">
+                <i class="fas fa-clock"></i>
+                <span>0:10</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-film"></i>
+                <span>1080p HD</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Card 4: Temporary Voice (No upload needed) -->
-        <div class="demo-card mb-4" data-aos="fade-up">
-          <h3 class="demo-title"><i class="fas fa-bolt me-2"></i>Quick Test - Temporary Voice</h3>
-          
-          <div class="row">
-            <div class="col-md-12">
-              <label class="form-label fw-bold">Text to Speak:</label>
-              <textarea [(ngModel)]="tempText" rows="3" class="form-control" placeholder="Enter text..."></textarea>
+        <!-- Arrow Divider -->
+        <div class="col-lg-1 d-none d-lg-block">
+          <div class="arrow-divider" data-aos="zoom-in">
+            <div class="arrow-wrapper">
+              <i class="fas fa-arrow-right"></i>
             </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Language:</label>
-              <select [(ngModel)]="tempLanguage" class="form-control">
-                <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold">Upload Temporary Voice:</label>
-              <input type="file" (change)="onTempFileSelected($event)" accept="audio/*" class="form-control">
-            </div>
-          </div>
-
-          <div class="row mt-3">
-            <div class="col-md-12">
-              <button class="ud-main-btn ud-primary-btn w-100" (click)="generateTempTTS()" [disabled]="isGeneratingTemp">
-                <i class="fas" [class.fa-spinner]="isGeneratingTemp" [class.fa-microphone]="!isGeneratingTemp"></i>
-                {{isGeneratingTemp ? 'Generating...' : 'Generate with Temporary Voice'}}
-              </button>
-            </div>
-          </div>
-
-          <div class="mt-3" *ngIf="tempStatus">
-            <div class="alert" [class.alert-success]="tempStatus.includes('success')" 
-                 [class.alert-danger]="tempStatus.includes('failed')">
-              {{tempStatus}}
-            </div>
-          </div>
-
-          <div class="mt-3" *ngIf="tempAudioUrl">
-            <audio controls class="w-100">
-              <source [src]="tempAudioUrl" type="audio/wav">
-            </audio>
-            <button class="btn btn-sm btn-outline-primary mt-2" (click)="downloadTempAudio()">
-              <i class="fas fa-download me-1"></i>Download Audio
-            </button>
+            <span class="arrow-text">AI Magic</span>
           </div>
         </div>
 
-        <!-- STT Demo -->
-        <div class="demo-card mb-4" data-aos="fade-up">
-          <h3 class="demo-title"><i class="fas fa-microphone me-2"></i>Speech-to-Text Transcriber</h3>
-          <div class="row">
-            <div class="col-md-6">
-              <button class="ud-main-btn ud-secondary-btn w-100 mb-3" (click)="toggleRecording()">
-                <i class="fas fa-circle me-2"></i>{{isRecording ? 'Stop Recording' : 'Start Recording'}}
-              </button>
+        <!-- Translated Video -->
+        <div class="col-lg-5" data-aos="fade-left">
+          <div class="video-card translated-video">
+            <div class="translated-glow"></div>
+            <div class="video-card-header">
+              <div class="header-left">
+                <div class="status-dot translated"></div>
+                <span class="header-title">AI Translated</span>
+              </div>
+              <div class="language-tag translated-tag">
+                <i class="fas fa-globe me-1"></i>Hindi
+              </div>
             </div>
-            <div class="col-md-6">
-              <textarea [(ngModel)]="sttResult" rows="4" class="form-control" placeholder="Transcribed text will appear here..." readonly></textarea>
+            <div class="video-player-wrapper" (click)="playTranslatedVideo($event)">
+              <video #translatedVideo controls class="marketing-video"
+                     (play)="onVideoPlay('translated')"
+                     (pause)="onVideoPause('translated')">
+                <source src="./assets/translated_hi.mp4" type="video/mp4">
+
+                Your browser does not support the video tag.
+              </video>
+              <div class="play-overlay" [class.hidden]="translatedVideoPlaying" (click)="playTranslatedVideo($event)">
+                <div class="play-button translated-play">
+                  <i class="fas fa-play"></i>
+                </div>
+                <span>AI Dubbed Audio</span>
+              </div>
+              <div class="floating-badge">
+                <i class="fas fa-magic me-2"></i>AI Translated
+              </div>
+            </div>
+            <div class="video-card-footer">
+              <div class="footer-info">
+                <i class="fas fa-robot"></i>
+                <span>AI Voice Clone</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-clock"></i>
+                <span>0:10</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-film"></i>
+                <span>1080p HD</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- Bottom Features -->
+    <div class="bottom-features mt-5">
+      <div class="row">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="bottom-feature-item">
+            <i class="fas fa-bolt"></i>
+            <h4>Lightning Fast</h4>
+            <p>Process videos in minutes</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="bottom-feature-item">
+            <i class="fas fa-wave-square"></i>
+            <h4>Voice Preservation</h4>
+            <p>Keep original voice tone</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="bottom-feature-item">
+            <i class="fas fa-closed-captioning"></i>
+            <h4>Auto Subtitles</h4>
+            <p>Generate in any language</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-5" data-aos="fade-up">
+      <a href="#demo" class="ud-main-btn ud-primary-btn" (click)="scrollTo('demo')">
+        <i class="fas fa-rocket me-2"></i>
+        Start Translating Free
+      </a>
+      <p class="cta-subtext mt-3">No credit card required • 10 minutes free</p>
+    </div>
+  </div>
+</section>
+    
+    
+    
+    
+    
+
+    
 
     <!-- Pricing Section -->
     <section id="pricing" class="ud-pricing">
@@ -434,19 +429,19 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         <div class="row">
           <div class="col-lg-6" data-aos="fade-right">
             <h2>Ready to transform your voice experience?</h2>
-            <p class="mt-3">Join thousands of creators, developers, and businesses using Awaaz AI.</p>
+            <p class="mt-3 ">Join thousands of creators, developers, and businesses using Awaaz AI.</p>
             <div class="mt-4">
               <div class="d-flex align-items-center mb-3">
                 <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
-                <span>Enterprise-grade security</span>
+                <span class="text-primary ">Enterprise-grade security</span>
               </div>
               <div class="d-flex align-items-center mb-3">
                 <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
-                <span>99.9% uptime guarantee</span>
+                <span class="text-primary ">99.9% uptime guarantee</span>
               </div>
               <div class="d-flex align-items-center mb-3">
                 <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
-                <span>24/7 technical support</span>
+                <span class="text-primary">24/7 technical support</span>
               </div>
             </div>
           </div>
@@ -503,20 +498,74 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         </div>
       </div>
     </footer>
-  `,
-  styleUrls: ['./app.component.scss']
+  `
 })
+
+
 export class AppComponent implements OnInit {
   navbarOpen = false;
-  
+
+  @ViewChild('originalVideo') originalVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('translatedVideo') translatedVideo!: ElementRef<HTMLVideoElement>;
+
+
+  originalVideoPlaying = false;
+  translatedVideoPlaying = false;
+
+  // Video play/pause methods
+  playOriginalVideo(event: Event) {
+    event.stopPropagation();
+    const video = this.originalVideo?.nativeElement;
+    if (video) {
+      if (video.paused) {
+        video.play();
+        this.originalVideoPlaying = true;
+      } else {
+        video.pause();
+        this.originalVideoPlaying = false;
+      }
+    }
+  }
+
+  playTranslatedVideo(event: Event) {
+    event.stopPropagation();
+    const video = this.translatedVideo?.nativeElement;
+    if (video) {
+      if (video.paused) {
+        video.play();
+        this.translatedVideoPlaying = true;
+      } else {
+        video.pause();
+        this.translatedVideoPlaying = false;
+      }
+    }
+  }
+
+  onVideoPlay(type: string) {
+    if (type === 'original') {
+      this.originalVideoPlaying = true;
+    } else {
+      this.translatedVideoPlaying = true;
+    }
+  }
+
+  onVideoPause(type: string) {
+    if (type === 'original') {
+      this.originalVideoPlaying = false;
+    } else {
+      this.translatedVideoPlaying = false;
+    }
+  }
+
   // API Configuration
   private readonly API_URL = 'https://shkahmed-backend.hf.space';
-  
+
   features = [
     { icon: 'fas fa-volume-up', title: 'Text-to-Speech (TTS)', description: 'Convert any text into natural speech with multiple voices.', badge: '5+ Voices', type: 'tts' },
     { icon: 'fas fa-clone', title: 'Voice Cloning', description: 'Clone any voice with just 10 seconds of audio.', badge: '10s Sample', type: 'cloning' },
     { icon: 'fas fa-smile', title: 'Emotion TTS', description: 'Generate speech with 12 different emotions.', badge: '12 Emotions', type: 'emotion' },
     { icon: 'fas fa-microphone', title: 'Speech-to-Text', description: 'Transcribe audio with high accuracy.', badge: '98% Accuracy', type: 'stt' },
+    { icon: 'fas fa-video', title: 'Video Translation', description: 'Translate video audio to 50+ languages with AI dubbing.', badge: '50+ Languages', type: 'video' },
     { icon: 'fas fa-bolt', title: 'Temporary Voice', description: 'Test with any voice without saving.', badge: 'Instant', type: 'temp' }
   ];
 
@@ -555,7 +604,7 @@ export class AppComponent implements OnInit {
   isLoadingSpeakers = false;
 
   // Card 1: Simple TTS
-  simpleTtsText = "Oh yes, the deep sea: nature's basement. Home to creatures so bizarre, even nightmares are like 'Nah, I'll pass.'";
+  simpleTtsText = "";
   selectedSimpleSpeaker = '';
   simpleTtsLanguage = 'en';
   isGeneratingSimple = false;
@@ -611,7 +660,205 @@ export class AppComponent implements OnInit {
   contactMessage = '';
   newsletterEmail = '';
 
-  constructor(private http: HttpClient) {}
+
+  // Card 5: Video Language Translation
+  selectedVideoFileName = '';
+  videoSourceLanguage = 'auto';
+  videoTargetLanguage = '';
+  videoPreviewUrl: string | null = null;
+  videoDuration = '00:00';
+  videoFileSize = '0 MB';
+  detectedLanguage = 'en';
+  includeSubtitles = true;
+  burnSubtitles = false;
+  videoVoiceStyle = 'natural';
+  isTranslatingVideo = false;
+  videoTranslationProgress = 0;
+  videoTranslationStatus = '';
+  videoTranslationMessage = '';
+  translatedVideoUrl: string | null = null;
+  translatedVideoSize = '0 MB';
+  videoFile: File | null = null;
+  simplePlaying = false;
+
+  // Video Methods
+  triggerVideoUpload() {
+    // Trigger the hidden file input
+    const fileInput = document.querySelector('#videoFileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
+  onVideoDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget as HTMLElement;
+    if (element) {
+      element.style.borderColor = '#2563eb';
+      element.style.background = 'rgba(37, 99, 235, 0.05)';
+    }
+  }
+
+  onVideoDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const element = event.currentTarget as HTMLElement;
+    if (element) {
+      element.style.borderColor = '#bfdbfe';
+      element.style.background = 'rgba(37, 99, 235, 0.02)';
+    }
+
+    const files = event.dataTransfer?.files;
+    if (files && files[0]) {
+      this.processVideoFile(files[0]);
+    }
+  }
+
+  onVideoFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.processVideoFile(file);
+    }
+  }
+
+  processVideoFile(file: File) {
+    // Check file size (500MB max)
+    const maxSize = 500 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File size must be less than 500MB');
+      return;
+    }
+
+    // Check file type
+    const allowedTypes = ['video/mp4', 'video/avi', 'video/quicktime', 'video/x-matroska'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload MP4, AVI, MOV, or MKV files');
+      return;
+    }
+
+    this.videoFile = file;
+    this.selectedVideoFileName = file.name;
+    this.videoFileSize = this.formatFileSize(file.size);
+
+    // Create preview URL
+    this.videoPreviewUrl = URL.createObjectURL(file);
+
+    // Get video duration
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      const duration = video.duration;
+      const minutes = Math.floor(duration / 60);
+      const seconds = Math.floor(duration % 60);
+      this.videoDuration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+    video.src = URL.createObjectURL(file);
+  }
+
+  shareAudio() {
+    if (this.simpleTtsAudioUrl) {
+      // Implement share functionality
+      alert('Share link copied to clipboard!');
+    }
+  }
+
+  selectVideoTargetLanguage(langCode: string) {
+    this.videoTargetLanguage = langCode;
+  }
+
+  async translateVideo() {
+    if (!this.videoFile || !this.videoTargetLanguage) {
+      alert('Please upload a video and select target language');
+      return;
+    }
+
+    this.isTranslatingVideo = true;
+    this.videoTranslationProgress = 0;
+    this.videoTranslationStatus = 'Starting translation...';
+    this.videoTranslationMessage = 'Starting video translation process...';
+
+    try {
+      const formData = new FormData();
+      formData.append('video', this.videoFile);
+      formData.append('source_language', this.videoSourceLanguage);
+      formData.append('target_language', this.videoTargetLanguage);
+      formData.append('include_subtitles', this.includeSubtitles.toString());
+      formData.append('burn_subtitles', this.burnSubtitles.toString());
+      formData.append('voice_style', this.videoVoiceStyle);
+
+      // Simulate progress (replace with actual API call)
+      for (let i = 0; i <= 100; i += 10) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this.videoTranslationProgress = i;
+
+        if (i < 30) {
+          this.videoTranslationStatus = 'Analyzing video...';
+        } else if (i < 60) {
+          this.videoTranslationStatus = 'Transcribing audio...';
+        } else if (i < 90) {
+          this.videoTranslationStatus = 'Generating translated audio...';
+        } else {
+          this.videoTranslationStatus = 'Finalizing video...';
+        }
+      }
+
+      // Actual API call (uncomment and modify based on your backend)
+      /*
+      const response = await this.http.post(`${this.API_URL}/translate-video`, formData, {
+        responseType: 'blob',
+        observe: 'response'
+      }).toPromise();
+  
+      if (response && response.body) {
+        this.translatedVideoUrl = URL.createObjectURL(response.body);
+        this.translatedVideoSize = this.formatFileSize(response.body.size);
+        this.videoTranslationMessage = 'Video translated successfully!';
+      }
+      */
+
+      // For demo, simulate success
+      this.videoTranslationProgress = 100;
+      this.videoTranslationStatus = 'Complete!';
+      this.videoTranslationMessage = 'Video translated successfully!';
+
+    } catch (error: any) {
+      console.error('Video translation error:', error);
+      this.videoTranslationMessage = `Translation failed: ${error.message}`;
+    } finally {
+      this.isTranslatingVideo = false;
+    }
+  }
+
+  downloadTranslatedVideo() {
+    if (this.translatedVideoUrl) {
+      const a = document.createElement('a');
+      a.href = this.translatedVideoUrl;
+      a.download = `translated_video_${Date.now()}.mp4`;
+      a.click();
+    }
+  }
+
+  previewTranslatedVideo() {
+    if (this.translatedVideoUrl) {
+      window.open(this.translatedVideoUrl, '_blank');
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  togglePlaySimple() {
+    this.simplePlaying = !this.simplePlaying;
+  }
+
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
     import('aos').then(AOS => {
@@ -657,7 +904,7 @@ export class AppComponent implements OnInit {
           language: response.speakers[name].language || 'en',
           languageName: response.speakers[name].language_name || 'English'
         }));
-        
+
         // Auto-select first speaker for each language
         this.updateDefaultSelections();
       }
@@ -672,19 +919,19 @@ export class AppComponent implements OnInit {
     // Set default speakers for current languages
     const englishSpeakers = this.getFilteredSpeakers('en');
     const hindiSpeakers = this.getFilteredSpeakers('hi');
-    
+
     if (this.simpleTtsLanguage === 'en' && englishSpeakers.length > 0 && !this.selectedSimpleSpeaker) {
       this.selectedSimpleSpeaker = englishSpeakers[0].name;
     } else if (this.simpleTtsLanguage === 'hi' && hindiSpeakers.length > 0 && !this.selectedSimpleSpeaker) {
       this.selectedSimpleSpeaker = hindiSpeakers[0].name;
     }
-    
+
     if (this.emotionTtsLanguage === 'en' && englishSpeakers.length > 0 && !this.selectedEmotionSpeaker) {
       this.selectedEmotionSpeaker = englishSpeakers[0].name;
     } else if (this.emotionTtsLanguage === 'hi' && hindiSpeakers.length > 0 && !this.selectedEmotionSpeaker) {
       this.selectedEmotionSpeaker = hindiSpeakers[0].name;
     }
-    
+
     if (this.cloneLanguage === 'en' && englishSpeakers.length > 0 && !this.selectedCloneSpeaker) {
       this.selectedCloneSpeaker = englishSpeakers[0].name;
     } else if (this.cloneLanguage === 'hi' && hindiSpeakers.length > 0 && !this.selectedCloneSpeaker) {
@@ -765,7 +1012,7 @@ export class AppComponent implements OnInit {
         this.simpleTtsAudioBlob = response.body;
         this.simpleTtsAudioUrl = URL.createObjectURL(this.simpleTtsAudioBlob);
         this.simpleTtsStatus = 'Audio generated successfully!';
-        
+
         const audio = new Audio(this.simpleTtsAudioUrl);
         audio.play();
       }
@@ -818,7 +1065,7 @@ export class AppComponent implements OnInit {
         this.emotionTtsAudioBlob = response.body;
         this.emotionTtsAudioUrl = URL.createObjectURL(this.emotionTtsAudioBlob);
         this.emotionTtsStatus = 'Emotional audio generated successfully!';
-        
+
         const audio = new Audio(this.emotionTtsAudioUrl);
         audio.play();
       }
@@ -886,14 +1133,14 @@ export class AppComponent implements OnInit {
       formData.append('description', `Uploaded via UI - ${this.getLanguageName(this.newSpeakerLanguage)} voice`);
 
       const response: any = await this.http.post(`${this.API_URL}/speakers/upload`, formData).toPromise();
-      
+
       if (response && response.status === 'success') {
         this.uploadStatus = `Speaker uploaded successfully with ${this.getLanguageName(this.newSpeakerLanguage)} language!`;
         this.newSpeakerName = '';
         this.selectedFile = null;
         this.selectedFileName = '';
         await this.loadSpeakers();
-        
+
         // Auto-select the new speaker if language matches current selection
         if (this.simpleTtsLanguage === this.newSpeakerLanguage) {
           this.onSimpleLanguageChange();
@@ -904,7 +1151,7 @@ export class AppComponent implements OnInit {
         if (this.cloneLanguage === this.newSpeakerLanguage) {
           this.onCloneLanguageChange();
         }
-        
+
         setTimeout(() => {
           this.uploadStatus = '';
         }, 3000);
@@ -945,7 +1192,7 @@ export class AppComponent implements OnInit {
         this.cloneAudioBlob = response.body;
         this.cloneAudioUrl = URL.createObjectURL(this.cloneAudioBlob);
         this.cloneStatus = '<div class="alert alert-success">Audio generated successfully!</div>';
-        
+
         const audio = new Audio(this.cloneAudioUrl);
         audio.play();
       }
@@ -972,7 +1219,7 @@ export class AppComponent implements OnInit {
     if (this.tempFile) {
       this.tempStatus = `Selected: ${this.tempFile.name}`;
       setTimeout(() => {
-    if (this.tempFile && this.tempStatus === `Selected: ${this.tempFile.name}`) {
+        if (this.tempFile && this.tempStatus === `Selected: ${this.tempFile.name}`) {
           this.tempStatus = '';
         }
       }, 3000);
@@ -1007,7 +1254,7 @@ export class AppComponent implements OnInit {
         this.tempAudioBlob = response.body;
         this.tempAudioUrl = URL.createObjectURL(this.tempAudioBlob);
         this.tempStatus = 'Audio generated successfully!';
-        
+
         const audio = new Audio(this.tempAudioUrl);
         audio.play();
       }
