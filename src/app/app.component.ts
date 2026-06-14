@@ -639,4 +639,396 @@ export class AppComponent implements OnInit {
   }
 
   selectVoicePreset(presetId: string) {
-    this.selectedVoicePreset = preset
+    this.selectedVoicePreset = presetId;
+    this.ttsStatus = `Voice preset changed to: ${this.voicePresets.find(p => p.id === presetId)?.name}`;
+    setTimeout(() => {
+      if (this.ttsStatus !== 'Generating...') this.ttsStatus = '';
+    }, 2000);
+  }
+
+  selectEmotion(emotionId: string) {
+    this.selectedEmotion = emotionId;
+    this.ttsStatus = `Emotion changed to: ${this.emotions.find(e => e.id === emotionId)?.name}`;
+    setTimeout(() => {
+      if (this.ttsStatus !== 'Generating...') this.ttsStatus = '';
+    }, 2000);
+  }
+
+  onSpeakerWavSelected(event: any) {
+    this.speakerWavFile = event.target.files[0];
+    this.speakerWavName = this.speakerWavFile?.name || '';
+  }
+
+  async generateEmotionTTS() {
+    if (!this.ttsText.trim()) {
+      alert('Please enter some text');
+      return;
+    }
+
+    this.isGenerating = true;
+    this.ttsStatus = 'Generating emotional speech...';
+    this.audioUrl = null;
+
+    try {
+      const formData = new FormData();
+      formData.append('text', this.ttsText);
+      formData.append('language', this.selectedLanguage);
+      formData.append('emotion', this.selectedEmotion);
+      formData.append('voice_preset', this.selectedVoicePreset);
+      formData.append('speed', '1.0');
+      formData.append('pitch', '1.0');
+
+      const response = await this.http.post(`${this.HF_API_URL}`, formData, {
+        responseType: 'blob',
+        observe: 'response'
+      }).toPromise();
+
+      if (response && response.body) {
+        this.audioBlob = response.body;
+        this.audioUrl = URL.createObjectURL(this.audioBlob);
+        this.ttsStatus = 'Audio generated successfully! Playing...';
+        this.playAudio();
+      } else {
+        throw new Error('No audio data received');
+      }
+    } catch (error: any) {
+      console.error('TTS API Error:', error);
+      this.ttsStatus = `Generation failed: ${error.message || 'Check if TTS server is running'}`;
+    } finally {
+      this.isGenerating = false;
+    }
+  }
+
+  playAudio() {
+    if (this.audioUrl) {
+      this.stopAudio();
+      this.audioElement = new Audio(this.audioUrl);
+      this.audioElement.play();
+      this.isPlaying = true;
+      this.audioElement.onended = () => {
+        this.isPlaying = false;
+      };
+    }
+  }
+
+  stopAudio() {
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement.currentTime = 0;
+      this.isPlaying = false;
+    }
+  }
+
+  downloadAudio() {
+    if (this.audioBlob && this.audioUrl) {
+      const a = document.createElement('a');
+      a.href = this.audioUrl;
+      a.download = `tts_${this.selectedVoicePreset}_${this.selectedEmotion}_${Date.now()}.wav`;
+      a.click();
+    } else {
+      alert('No audio generated yet. Please generate speech first.');
+    }
+  }
+
+  clearAudio() {
+    this.stopAudio();
+    this.audioUrl = null;
+    this.audioBlob = null;
+    this.ttsStatus = '';
+  }
+
+  // Voice Cloning Functions with Hugging Face API
+  triggerFileUpload() {
+    const fileInput = document.querySelector('#fileInput') as HTMLInputElement;
+    fileInput?.click();
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const files = event.dataTransfer?.files;
+    if (files && files[0]) {
+      this.selectedFile = files[0];
+      this.selectedFileName = this.selectedFile.name;
+    }
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    this.selectedFileName = this.selectedFile?.name || '';
+  }
+
+  clearSelectedFile() {
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.cloneAudioUrl = null;
+    this.cloneStatus = '';
+  }
+
+  loadSampleSpeaker(speaker: string) {
+    this.selectedSpeakerName = speaker;
+    this.cloneText = `Hello, this is ${speaker}'s voice. Amazing, isn't it?`;
+    this.cloneStatus = `<div class="alert alert-info">${speaker} voice selected! Click "Clone Voice & Generate" to hear it.</div>`;
+  }
+
+  async cloneVoiceWithHuggingFace() {
+    if (!this.cloneText.trim()) {
+      alert('Please enter text to speak');
+      return;
+    }
+
+    this.isCloning = true;
+    this.cloneStatus = '<div class="alert alert-info">Cloning voice and generating speech via Hugging Face API...</div>';
+
+    try {
+      const formData = new FormData();
+      formData.append('text', this.cloneText);
+      formData.append('speaker_name', this.selectedSpeakerName);
+
+      // If user uploaded a custom file, use it instead of speaker_name
+      if (this.selectedFile) {
+        formData.append('speaker_wav', this.selectedFile);
+      }
+
+      const response = await this.http.post(this.HF_API_URL, formData, {
+        responseType: 'blob',
+        observe: 'response'
+      }).toPromise();
+
+      if (response && response.body) {
+        this.cloneAudioBlob = response.body;
+        this.cloneAudioUrl = URL.createObjectURL(this.cloneAudioBlob);
+        this.cloneStatus = '<div class="alert alert-success">Voice cloned successfully! Audio ready via Hugging Face.</div>';
+        
+        // Auto-play
+        const audio = new Audio(this.cloneAudioUrl);
+        audio.play();
+      } else {
+        throw new Error('No audio data received from Hugging Face API');
+      }
+    } catch (error: any) {
+      console.error('Hugging Face Clone Error:', error);
+      this.cloneStatus = `<div class="alert alert-danger">Cloning failed: ${error.message || 'Please check if the Hugging Face backend is running'}</div>`;
+    } finally {
+      this.isCloning = false;
+    }
+  }
+
+  downloadCloneAudio() {
+    if (this.cloneAudioBlob && this.cloneAudioUrl) {
+      const a = document.createElement('a');
+      a.href = this.cloneAudioUrl;
+      a.download = `cloned_voice_${this.selectedSpeakerName}_${Date.now()}.wav`;
+      a.click();
+    } else {
+      alert('No audio generated yet. Please clone a voice first.');
+    }
+  }
+
+  // Video Voice Change Functions
+  triggerVideoUpload() {
+    const videoInput = document.querySelector('#videoInput') as HTMLInputElement;
+    videoInput?.click();
+  }
+
+  onDragOverVideo(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDropVideo(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const files = event.dataTransfer?.files;
+    if (files && files[0] && files[0].type.startsWith('video/')) {
+      this.selectedVideoFile = files[0];
+      this.selectedVideoName = this.selectedVideoFile.name;
+      this.videoPreviewUrl = URL.createObjectURL(this.selectedVideoFile);
+    }
+  }
+
+  onVideoSelected(event: any) {
+    this.selectedVideoFile = event.target.files[0];
+    this.selectedVideoName = this.selectedVideoFile?.name || '';
+    if (this.selectedVideoFile) {
+      this.videoPreviewUrl = URL.createObjectURL(this.selectedVideoFile);
+    }
+  }
+
+  async changeVideoVoice() {
+    if (!this.selectedVideoFile) {
+      alert('Please upload a video file first');
+      return;
+    }
+
+    this.isProcessingVideo = true;
+
+    // Simulate video voice change processing
+    setTimeout(() => {
+      this.isProcessingVideo = false;
+      alert(`Voice changed to ${this.videoVoiceEffect} effect! (Demo - In production, this would process the video)`);
+    }, 3000);
+  }
+
+  downloadProcessedVideo() {
+    if (this.processedVideoBlob) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(this.processedVideoBlob);
+      a.download = `voice_changed_video_${Date.now()}.mp4`;
+      a.click();
+    } else {
+      alert('No processed video available. Please change voice first.');
+    }
+  }
+
+  // Simple Video Generation Functions
+  async generateSimpleVideo() {
+    if (!this.videoScript.trim()) {
+      alert('Please enter a video script');
+      return;
+    }
+
+    this.isGeneratingVideo = true;
+    this.videoGenerationStatus = 'Generating your AI video... This may take a moment.';
+
+    // First generate TTS audio for the video using Hugging Face API
+    try {
+      const formData = new FormData();
+      formData.append('text', this.videoScript);
+      formData.append('speaker_name', this.selectedSpeakerName);
+
+      const audioResponse = await this.http.post(this.HF_API_URL, formData, {
+        responseType: 'blob',
+        observe: 'response'
+      }).toPromise();
+
+      if (audioResponse && audioResponse.body) {
+        // Simulate video generation with the audio
+        setTimeout(() => {
+          // Create a simple video representation (in production, this would combine audio with avatar)
+          const videoBlob = new Blob([this.videoScript], { type: 'video/mp4' });
+          this.generatedVideoBlob = videoBlob;
+          this.generatedVideoUrl = URL.createObjectURL(videoBlob);
+          this.videoGenerationStatus = 'Video generated successfully!';
+          this.isGeneratingVideo = false;
+          
+          // Play the audio
+          const audio = new Audio(URL.createObjectURL(audioResponse.body!));
+          audio.play();
+        }, 2000);
+      }
+    } catch (error: any) {
+      console.error('Video generation error:', error);
+      this.videoGenerationStatus = `Video generation failed: ${error.message}`;
+      this.isGeneratingVideo = false;
+    }
+  }
+
+  downloadGeneratedVideo() {
+    if (this.generatedVideoBlob && this.generatedVideoUrl) {
+      const a = document.createElement('a');
+      a.href = this.generatedVideoUrl;
+      a.download = `ai_generated_video_${Date.now()}.mp4`;
+      a.click();
+    } else {
+      alert('No video generated yet. Please generate a video first.');
+    }
+  }
+
+  // STT Functions
+  toggleRecording() {
+    if (!this.isRecording) {
+      this.startRecording();
+    } else {
+      this.stopRecording();
+    }
+  }
+
+  startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.audioChunks = [];
+
+        this.mediaRecorder.ondataavailable = (event: any) => {
+          this.audioChunks.push(event.data);
+        };
+
+        this.mediaRecorder.onstop = async () => {
+          this.sttResult = "Transcription would appear here. Connect to your STT API endpoint.";
+          alert('Recording complete!');
+        };
+
+        this.mediaRecorder.start();
+        this.isRecording = true;
+      })
+      .catch(err => {
+        console.error('Microphone access denied:', err);
+        alert('Please allow microphone access to use STT feature.');
+      });
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+    }
+  }
+
+  uploadAudio() {
+    alert('Upload audio for transcription. Connect to STT API at your Hugging Face endpoint');
+  }
+
+  // Voice Change Functions
+  startVoiceChange() {
+    this.voiceChangeStatus = `
+      <div class="alert alert-success">
+        Voice changer active! Effect: ${this.selectedEffect}
+      </div>
+    `;
+
+    this.voiceChangeInterval = setInterval(() => {
+      this.voiceChangeStatus = `
+        <div class="alert alert-info">
+          Voice effect applied: ${this.selectedEffect} (simulated)
+        </div>
+      `;
+    }, 3000);
+  }
+
+  stopVoiceChange() {
+    if (this.voiceChangeInterval) {
+      clearInterval(this.voiceChangeInterval);
+    }
+    this.voiceChangeStatus = `
+      <div class="alert alert-secondary">
+        Voice changer stopped
+      </div>
+    `;
+  }
+
+  sendMessage() {
+    if (this.contactName && this.contactEmail && this.contactMessage) {
+      alert('Thank you for your message! Our team will get back to you soon.');
+      this.contactName = '';
+      this.contactEmail = '';
+      this.contactMessage = '';
+    } else {
+      alert('Please fill in all fields.');
+    }
+  }
+
+  subscribeNewsletter() {
+    if (this.newsletterEmail) {
+      alert(`Subscribed with email: ${this.newsletterEmail}`);
+      this.newsletterEmail = '';
+    } else {
+      alert('Please enter an email address.');
+    }
+  }
+}
