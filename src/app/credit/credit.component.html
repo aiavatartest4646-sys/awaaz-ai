@@ -1,0 +1,15 @@
+<div class="credit-box">
+
+  <h2>💰 Credit Dashboard</h2>
+
+  <p><b>Balance:</b> {{ balance }}</p>
+
+  <h3>📜 Transactions</h3>
+
+  <ul>
+    <li *ngFor="let t of transactions">
+      {{ t.type }} - {{ t.amount }} - {{ t.description }}
+    </li>
+  </ul>
+
+</div>

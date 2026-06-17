@@ -1,0 +1,597 @@
+<!-- ========== NEW HEADER WITH WORKING DROPDOWN ========== -->
+<header class="ud-header">
+  <div class="container">
+    <nav class="navbar navbar-expand-lg">
+      <!-- Brand/Logo -->
+      <a class="navbar-brand" routerLink="/home">
+        <div class="brand-wrapper">
+          <i class="fas fa-microphone-alt"></i>
+          <span>Awaaz AI</span>
+        </div>
+      </a>
+
+      <!-- Toggler for Mobile -->
+      <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Nav Links -->
+      <div class="collapse navbar-collapse" [class.show]="navbarOpen">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" (click)="scrollTo('home')">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" (click)="scrollTo('features')">
+              <i class="fas fa-rocket"></i> Features
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" (click)="scrollTo('demo')">
+              <i class="fas fa-microphone"></i> Demo Studio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" (click)="scrollTo('pricing')">
+              <i class="fas fa-tag"></i> Pricing
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" (click)="scrollTo('contact')">
+              <i class="fas fa-envelope"></i> Contact
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right Side Buttons -->
+      <div class="navbar-actions">
+        <!-- Not Logged In -->
+        <ng-container *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="btn-login">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <a routerLink="/login" class="btn-primary">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </a>
+        </ng-container>
+
+        <!-- Logged In - User Profile with Dropdown -->
+        <ng-container *ngIf="isLoggedIn">
+          <div class="profile-wrapper" #profileWrapper>
+            <div class="profile-trigger" (click)="toggleDropdown($event)">
+              <img [src]="user?.photoUrl" alt="Profile" class="profile-avatar">
+              <span class="profile-name">{{ user?.name?.split(' ')[0] }}</span>
+              <i class="fas fa-chevron-down" [class.rotated]="dropdownOpen"></i>
+            </div>
+
+            <!-- Dropdown -->
+            <div class="profile-dropdown" *ngIf="dropdownOpen">
+              <!-- User Info -->
+              <div class="dropdown-user">
+                <img [src]="user?.photoUrl" alt="Profile" class="dropdown-user-avatar">
+                <div class="dropdown-user-details">
+                  <div class="dropdown-user-name">{{ user?.name }}</div>
+                  <div class="dropdown-user-email">{{ user?.email }}</div>
+                </div>
+              </div>
+
+              <!-- Credits -->
+              <div class="dropdown-credits">
+                <div class="credit-box">
+                  <i class="fas fa-coins"></i>
+                  <div>
+                    <span class="credit-label">Available</span>
+                    <span class="credit-value">{{ userCredits?.balance || 0 }}</span>
+                  </div>
+                </div>
+                <div class="credit-divider"></div>
+                <div class="credit-box">
+                  <i class="fas fa-clock"></i>
+                  <div>
+                    <span class="credit-label">Daily Reset</span>
+                    <span class="credit-value">20</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Menu Items -->
+              <div class="dropdown-menu-items">
+                <a routerLink="/home" class="dropdown-item" (click)="closeDropdown()">
+                  <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a routerLink="/home" class="dropdown-item" (click)="closeDropdown(); scrollTo('demo')">
+                  <i class="fas fa-microphone"></i> TTS Studio
+                </a>
+                <a routerLink="/home" class="dropdown-item" (click)="closeDropdown(); scrollTo('pricing')">
+                  <i class="fas fa-crown"></i> Upgrade Plan
+                </a>
+              </div>
+
+              <!-- Logout -->
+              <div class="dropdown-logout" (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section class="ud-hero" id="home">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7" data-aos="fade-right">
+        <div class="ud-hero-content">
+          <h1 class="ud-hero-title">
+            Awaaz AI Suite: <br>
+            <span class="gradient-text">
+              TTS, Voice Cloning & Emotion AI
+            </span>
+          </h1>
+          <p class="ud-hero-desc">
+            Transform your voice with cutting-edge AI technology. Generate natural speech,
+            clone voices, and express emotions in 12 different styles.
+          </p>
+          <div class="ud-hero-buttons">
+            <a href="#demo" class="ud-main-btn ud-primary-btn me-3" (click)="scrollTo('demo')">Start Creating Free</a>
+            <a href="#features" class="ud-main-btn ud-outline-btn" (click)="scrollTo('features')">Explore Features</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5" data-aos="fade-left">
+        <div class="ud-hero-image text-center float-animation">
+          <i class="fas fa-head-side-vr" style="font-size: 200px; color: rgba(255,255,255,0.2);"></i>
+          <i class="fas fa-microphone-alt"
+            style="font-size: 80px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="ud-features">
+  <div class="container">
+    <div class="ud-section-title" data-aos="fade-up">
+      <span>What We Offer</span>
+      <h2>Complete Voice AI Platform</h2>
+      <p>All the tools you need to work with voice AI in one place</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6" *ngFor="let feature of features; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i + 1) * 100">
+        <div class="ud-single-feature" (click)="scrollToDemo(feature.type)">
+          <div class="ud-feature-icon"><i [class]="feature.icon"></i></div>
+          <h3 class="ud-feature-title">{{feature.title}}</h3>
+          <p>{{feature.description}}</p>
+          <span class="badge bg-primary mt-3">{{feature.badge}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TTS Marketing Section -->
+<section id="tts-marketing" class="tts-marketing-section">
+  <div class="container">
+    <!-- Marketing Text -->
+    <div class="marketing-content" data-aos="fade-up">
+      <div class="marketing-badge">
+        <i class="fas fa-volume-up me-2"></i>Text-to-Speech Engine
+      </div>
+      <h1 class="marketing-title">
+        Turn Text Into
+        <span class="highlight-text">Natural Speech</span>
+      </h1>
+      <p class="marketing-description">
+        Convert any written content into lifelike audio with our advanced AI voices.
+        Choose from multiple languages and speakers for the perfect narration.
+      </p>
+      <div class="marketing-stats">
+        <div class="stat-item">
+          <span class="stat-number">5+</span>
+          <span class="stat-label">Voices</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">5</span>
+          <span class="stat-label">Languages</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">99%</span>
+          <span class="stat-label">Natural</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">Free</span>
+          <span class="stat-label">To Start</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TTS Demo Card -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-8" style="width:100% !important;">
+
+        <!-- Card 1: Simple TTS with Login Overlay -->
+        <div class="demo-card mb-4" data-aos="fade-up" style="position: relative; overflow: hidden;">
+
+          <!-- Login Overlay (shown when NOT logged in) -->
+          <div *ngIf="!isLoggedIn" class="login-overlay">
+            <div class="login-overlay-content">
+              <i class="fas fa-lock" style="font-size: 48px; color: #6366f1; margin-bottom: 16px;"></i>
+              <h3 style="color: #374151;">Login to Generate Audio</h3>
+              <p style="color: #6b7280; margin-bottom: 16px;">Sign in to access all TTS features</p>
+              <a routerLink="/login" class="ud-main-btn ud-primary-btn">
+                <i class="fas fa-sign-in-alt me-2"></i>Login Now
+              </a>
+            </div>
+          </div>
+
+          <!-- Card Content (blurred when not logged in) -->
+          <div [class.blurred]="!isLoggedIn">
+            <h3 class="demo-title"><i class="fas fa-volume-up me-2"></i>Simple Text-to-Speech</h3>
+
+            <div class="row">
+              <div class="col-md-12">
+                <label class="form-label fw-bold">Enter Text:</label>
+                <textarea [(ngModel)]="simpleTtsText" rows="3" class="form-control"
+                  placeholder="Enter your text here..."></textarea>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Language:</label>
+                <select [(ngModel)]="simpleTtsLanguage" (change)="onSimpleLanguageChange()" class="form-control">
+                  <option *ngFor="let lang of languages" [value]="lang.code">{{lang.name}}</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Select Speaker ({{getLanguageName(simpleTtsLanguage)}}):</label>
+                <div class="speaker-list">
+                  <div *ngFor="let speaker of getFilteredSpeakers(simpleTtsLanguage)" class="speaker-chip"
+                    [class.active]="selectedSimpleSpeaker === speaker.name" (click)="selectSimpleSpeaker(speaker.name)">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{speaker.name}}</span>
+                    <span class="language-badge">{{speaker.language}}</span>
+                  </div>
+                  <div *ngIf="isLoadingSpeakers" class="text-muted">Loading speakers...</div>
+                  <div *ngIf="!isLoadingSpeakers && getFilteredSpeakers(simpleTtsLanguage).length === 0"
+                    class="text-muted">
+                    No {{getLanguageName(simpleTtsLanguage)}} speakers found.
+                    <a href="javascript:void(0)" (click)="scrollTo('clone-card')">Upload a
+                      {{getLanguageName(simpleTtsLanguage)}} speaker</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <button class="ud-main-btn ud-primary-btn w-100" (click)="generateSimpleTTS()"
+                  [disabled]="isGeneratingSimple || !isLoggedIn">
+                  <i class="fas" [class.fa-spinner]="isGeneratingSimple" [class.fa-play]="!isGeneratingSimple"></i>
+                  {{isGeneratingSimple ? 'Generating...' : 'Generate Speech'}}
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3" *ngIf="simpleTtsStatus">
+              <div class="alert" [class.alert-success]="simpleTtsStatus.includes('success')"
+                [class.alert-danger]="simpleTtsStatus.includes('failed')">
+                {{simpleTtsStatus}}
+              </div>
+            </div>
+
+            <div class="mt-3" *ngIf="simpleTtsAudioUrl">
+              <audio controls class="w-100">
+                <source [src]="simpleTtsAudioUrl" type="audio/wav">
+              </audio>
+              <button class="btn btn-sm btn-outline-primary mt-2" (click)="downloadSimpleAudio()">
+                <i class="fas fa-download me-1"></i>Download Audio
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Translation Marketing Section -->
+<section id="video-marketing" class="video-marketing-section">
+  <div class="container">
+    <!-- Marketing Text -->
+    <div class="marketing-content" data-aos="fade-up">
+      <div class="marketing-badge">
+        <i class="fas fa-star me-2"></i>AI-Powered Video Translation
+      </div>
+      <h1 class="marketing-title">
+        Break Language Barriers
+        <span class="highlight-text">Instantly</span>
+      </h1>
+      <p class="marketing-description">
+        Transform your videos into any language while preserving the original voice, tone,
+        and emotions. Reach global audiences without expensive dubbing studios.
+      </p>
+      <div class="marketing-stats">
+        <div class="stat-item">
+          <span class="stat-number">50+</span>
+          <span class="stat-label">Languages</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">2 min</span>
+          <span class="stat-label">Processing</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">Support</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two Videos Side by Side -->
+    <div class="video-comparison-wrapper mt-5">
+      <div class="row align-items-center">
+        <!-- Original Video -->
+        <div class="col-lg-6" data-aos="fade-right">
+          <div class="video-card original-video">
+            <div class="video-card-header">
+              <div class="header-left">
+                <div class="status-dot original"></div>
+                <span class="header-title">Original Video</span>
+              </div>
+              <div class="language-tag original-tag">
+                <i class="fas fa-globe me-1"></i>English
+              </div>
+            </div>
+            <div class="video-player-wrapper" (click)="playOriginalVideo($event)">
+              <video #originalVideo controls class="marketing-video" (play)="onVideoPlay('original')"
+                (pause)="onVideoPause('original')">
+                <source src="./assets/translated_en.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="play-overlay" [class.hidden]="originalVideoPlaying" (click)="playOriginalVideo($event)">
+                <div class="play-button">
+                  <i class="fas fa-play"></i>
+                </div>
+                <span>Original Audio</span>
+              </div>
+            </div>
+            <div class="video-card-footer">
+              <div class="footer-info">
+                <i class="fas fa-microphone"></i>
+                <span>Natural Voice</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-clock"></i>
+                <span>0:10</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-film"></i>
+                <span>1080p HD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow Divider -->
+        <div class="col-lg-1 d-none d-lg-block">
+          <div class="arrow-divider" data-aos="zoom-in">
+            <div class="arrow-wrapper">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+            <span class="arrow-text">AI Magic</span>
+          </div>
+        </div>
+
+        <!-- Translated Video -->
+        <div class="col-lg-5" data-aos="fade-left">
+          <div class="video-card translated-video">
+            <div class="translated-glow"></div>
+            <div class="video-card-header">
+              <div class="header-left">
+                <div class="status-dot translated"></div>
+                <span class="header-title">AI Translated</span>
+              </div>
+              <div class="language-tag translated-tag">
+                <i class="fas fa-globe me-1"></i>Hindi
+              </div>
+            </div>
+            <div class="video-player-wrapper" (click)="playTranslatedVideo($event)">
+              <video #translatedVideo controls class="marketing-video" (play)="onVideoPlay('translated')"
+                (pause)="onVideoPause('translated')">
+                <source src="./assets/translated_hi.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="play-overlay" [class.hidden]="translatedVideoPlaying" (click)="playTranslatedVideo($event)">
+                <div class="play-button translated-play">
+                  <i class="fas fa-play"></i>
+                </div>
+                <span>AI Dubbed Audio</span>
+              </div>
+              <div class="floating-badge">
+                <i class="fas fa-magic me-2"></i>AI Translated
+              </div>
+            </div>
+            <div class="video-card-footer">
+              <div class="footer-info">
+                <i class="fas fa-robot"></i>
+                <span>AI Voice Clone</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-clock"></i>
+                <span>0:10</span>
+              </div>
+              <div class="footer-info">
+                <i class="fas fa-film"></i>
+                <span>1080p HD</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Features -->
+    <div class="bottom-features mt-5">
+      <div class="row">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="bottom-feature-item">
+            <i class="fas fa-bolt"></i>
+            <h4>Lightning Fast</h4>
+            <p>Process videos in minutes</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="bottom-feature-item">
+            <i class="fas fa-wave-square"></i>
+            <h4>Voice Preservation</h4>
+            <p>Keep original voice tone</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="bottom-feature-item">
+            <i class="fas fa-closed-captioning"></i>
+            <h4>Auto Subtitles</h4>
+            <p>Generate in any language</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-5" data-aos="fade-up">
+      <a href="#demo" class="ud-main-btn ud-primary-btn" (click)="scrollTo('demo')">
+        <i class="fas fa-rocket me-2"></i>
+        Start Translating Free
+      </a>
+      <p class="cta-subtext mt-3">No credit card required • 10 minutes free</p>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="ud-pricing">
+  <div class="container">
+    <div class="ud-section-title" data-aos="fade-up">
+      <span>Pricing</span>
+      <h2>Choose Your Plan</h2>
+      <p>Flexible plans for every need - from creators to enterprises</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-4" *ngFor="let plan of pricingPlans; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i + 1) * 100">
+        <div class="ud-single-pricing" [class.active]="plan.popular">
+          <span class="ud-popular-tag" *ngIf="plan.popular">POPULAR</span>
+          <h3>{{plan.name}}</h3>
+          <h2>{{plan.price}}</h2>
+          <p *ngIf="plan.period">{{plan.period}}</p>
+          <ul class="list-unstyled mt-4">
+            <li *ngFor="let feature of plan.features">✓ {{feature}}</li>
+          </ul>
+          <a [href]="plan.link" class="ud-main-btn" [class.ud-primary-btn]="plan.popular"
+            [class.ud-outline-btn]="!plan.popular" (click)="scrollTo('demo')">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="demo-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6" data-aos="fade-right">
+        <h2>Ready to transform your voice experience?</h2>
+        <p class="mt-3">Join thousands of creators, developers, and businesses using Awaaz AI.</p>
+        <div class="mt-4">
+          <div class="d-flex align-items-center mb-3">
+            <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
+            <span class="text-primary">Enterprise-grade security</span>
+          </div>
+          <div class="d-flex align-items-center mb-3">
+            <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
+            <span class="text-primary">99.9% uptime guarantee</span>
+          </div>
+          <div class="d-flex align-items-center mb-3">
+            <i class="fas fa-check-circle text-primary me-3 fs-4"></i>
+            <span class="text-primary">24/7 technical support</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="demo-card">
+          <h3>Get in Touch</h3>
+          <form (ngSubmit)="sendMessage()">
+            <input type="text" [(ngModel)]="contactName" name="name" class="form-control mb-3" placeholder="Your Name"
+              required>
+            <input type="email" [(ngModel)]="contactEmail" name="email" class="form-control mb-3"
+              placeholder="Email Address" required>
+            <textarea rows="3" [(ngModel)]="contactMessage" name="message" class="form-control mb-3"
+              placeholder="Message" required></textarea>
+            <button type="submit" class="ud-main-btn ud-primary-btn w-100">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="ud-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4">
+        <i class="fas fa-microphone-alt fs-1 mb-3"></i>
+        <p>Awaaz AI - Complete Voice AI Platform for creators and businesses.</p>
+      </div>
+      <div class="col-lg-2">
+        <h5>Product</h5>
+        <ul class="list-unstyled">
+          <li><a href="#features" class="text-white-50 text-decoration-none" (click)="scrollTo('features')">Features</a>
+          </li>
+          <li><a href="#pricing" class="text-white-50 text-decoration-none" (click)="scrollTo('pricing')">Pricing</a>
+          </li>
+          <li><a href="#demo" class="text-white-50 text-decoration-none" (click)="scrollTo('demo')">Demo</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2">
+        <h5>Resources</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white-50 text-decoration-none">Documentation</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">API Reference</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Blog</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5>Subscribe to Newsletter</h5>
+        <div class="input-group">
+          <input type="email" [(ngModel)]="newsletterEmail" class="form-control" placeholder="Your email">
+          <button class="btn btn-primary" (click)="subscribeNewsletter()">Subscribe</button>
+        </div>
+      </div>
+    </div>
+    <hr class="mt-4">
+    <div class="text-center">
+      <p class="mb-0">© 2024 Awaaz AI. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
