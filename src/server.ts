@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:4200',
     'http://localhost:4000',
-    'http://awaazai.fun // Add your production domain
+    'http://awaazai.fun'
   ];
 
   const origin = req.headers.origin;
