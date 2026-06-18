@@ -64,7 +64,9 @@ export class HomeComponent implements OnInit {
     { code: 'es', name: 'Spanish' },
     { code: 'fr', name: 'French' },
     { code: 'de', name: 'German' },
-    { code: 'hi', name: 'Hindi' }
+    { code: 'hi', name: 'Hindi' },
+    { code: 'ar', name: 'Arabic' },
+    { code: 'ur', name: 'Urdu' }
   ];
 
   pricingPlans = [
@@ -1147,11 +1149,24 @@ export class HomeComponent implements OnInit {
   voiceActors = [
     {
       id: 1,
-      name: 'Sarah Johnson',
+      name: 'Diya Sharma',
       type: 'Female Voice',
       image: 'assets/1.jpeg',
       audio: 'assets/1.wav',
       categories: ['Voice Over', 'Narration', 'Commercial'],
+      language: 'hi', // English
+      languageName: 'Hindi',
+      isPlaying: false
+    },
+    {
+      id: 16,
+      name: 'James Anderson',
+      type: 'Female Voice',
+      image: 'assets/16.jpeg',
+      audio: 'assets/16.wav',
+      categories: ['Business', 'Corporate', 'Narration'],
+      language: 'ar',
+      languageName: 'Arabic',
       isPlaying: false
     },
     {
@@ -1161,6 +1176,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/2.jpeg',
       audio: 'assets/2.wav',
       categories: ['Business', 'Corporate', 'Narration'],
+      language: 'en',
+      languageName: 'English',
       isPlaying: false
     },
     {
@@ -1170,6 +1187,19 @@ export class HomeComponent implements OnInit {
       image: 'assets/3.jpeg',
       audio: 'assets/3.mp3',
       categories: ['Kids', 'Animation', 'Cartoon'],
+      language: 'en',
+      languageName: 'English',
+      isPlaying: false
+    },
+    {
+      id: 7,
+      name: 'Hina Khan',
+      type: 'Female Voice',
+      image: 'assets/14.jpeg',
+      audio: 'assets/7.wav',
+      categories: ['Commercial', 'Voice Over', 'Promo'],
+      language: 'ur', // Spanish
+      languageName: 'Urdu',
       isPlaying: false
     },
     {
@@ -1179,6 +1209,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/4.jpeg',
       audio: 'assets/amanda.wav',
       categories: ['Storytelling', 'Narration', 'Character'],
+      language: 'en',
+      languageName: 'English',
       isPlaying: false
     },
     {
@@ -1188,6 +1220,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/5.jpeg',
       audio: 'assets/5.wav',
       categories: ['Storytelling', 'Narration', 'Character'],
+      language: 'en',
+      languageName: 'English',
       isPlaying: false
     },
     {
@@ -1197,15 +1231,19 @@ export class HomeComponent implements OnInit {
       image: 'assets/6.jpeg',
       audio: 'assets/6.wav',
       categories: ['Corporate', 'Business', 'Professional'],
+      language: 'en',
+      languageName: 'English',
       isPlaying: false
     },
     {
-      id: 7,
-      name: 'Lisa Martinez',
-      type: 'Female Voice',
-      image: 'assets/7.jpeg',
-      audio: 'assets/7.wav',
-      categories: ['Commercial', 'Voice Over', 'Promo'],
+      id: 15,
+      name: 'Kareem Khataab',
+      type: 'Business Voice',
+      image: 'assets/15.jpeg',
+      audio: 'assets/15.wav',
+      categories: ['Corporate', 'Business', 'Professional'],
+      language: 'ar',
+      languageName: 'Arabic',
       isPlaying: false
     },
     {
@@ -1215,6 +1253,19 @@ export class HomeComponent implements OnInit {
       image: 'assets/8.jpeg',
       audio: 'assets/8.mp3',
       categories: ['Narration', 'Documentary', 'Commercial'],
+      language: 'es',
+      languageName: 'Spanish',
+      isPlaying: false
+    },
+    {
+      id: 13,
+      name: 'Kiran gupta',
+      type: 'Female Voice',
+      image: 'assets/13.jpeg',
+      audio: 'assets/13.wav',
+      categories: ['Narration', 'Documentary', 'Commercial'],
+      language: 'hi',
+      languageName: 'hindi',
       isPlaying: false
     },
     {
@@ -1224,6 +1275,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/9.jpeg',
       audio: 'assets/9.mp3',
       categories: ['Kids', 'Animation', 'Educational'],
+      language: 'fr', // French
+      languageName: 'French',
       isPlaying: false
     },
     {
@@ -1233,6 +1286,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/10.jpeg',
       audio: 'assets/10.wav',
       categories: ['Storytelling', 'Narration', 'Character'],
+      language: 'fr',
+      languageName: 'French',
       isPlaying: false
     },
     {
@@ -1242,6 +1297,8 @@ export class HomeComponent implements OnInit {
       image: 'assets/11.jpeg',
       audio: 'assets/11.mp3',
       categories: ['Storytelling', 'Narration', 'Character'],
+      language: 'de', // German
+      languageName: 'German',
       isPlaying: false
     },
     {
@@ -1249,11 +1306,23 @@ export class HomeComponent implements OnInit {
       name: 'Jennifer Park',
       type: 'Business Voice',
       image: 'assets/12.jpeg',
-      audio: 'assets/12.mp3',
+      audio: 'assets/12.wav',
       categories: ['Corporate', 'Business', 'Professional'],
+      language: 'en', // Hindi
+      languageName: 'English',
       isPlaying: false
     }
   ];
+
+  selectedLanguage: string = 'all';
+
+  // Get filtered voice actors based on selected language
+  get filteredVoiceActors() {
+    if (this.selectedLanguage === 'all') {
+      return this.voiceActors;
+    }
+    return this.voiceActors.filter(actor => actor.language === this.selectedLanguage);
+  }
 
   togglePlay(actor: any) {
     // Stop all other actors

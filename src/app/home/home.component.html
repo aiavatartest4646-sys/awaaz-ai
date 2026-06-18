@@ -6,7 +6,7 @@
       <a class="navbar-brand" routerLink="/home">
         <div class="brand-wrapper">
           <i class="fas fa-microphone-alt"></i>
-          <span>Awaaz AI</span>
+          <span>GenVOI</span>
         </div>
       </a>
 
@@ -130,7 +130,7 @@
       <div class="col-lg-7" data-aos="fade-right">
         <div class="ud-hero-content">
           <h1 class="ud-hero-title">
-            Awaaz AI Suite: <br>
+            GenVOI AI Suite: <br>
             <span class="gradient-text">
               TTS, Voice Cloning & Emotion AI
             </span>
@@ -157,26 +157,107 @@
 </section>
 
 <!-- Features Section -->
+<!-- Features Section -->
 <section id="features" class="ud-features">
   <div class="container">
     <div class="ud-section-title" data-aos="fade-up">
-      <span>What We Offer</span>
-      <h2>Complete Voice AI Platform</h2>
-      <p>All the tools you need to work with voice AI in one place</p>
+      <span class="section-subtitle">What We Offer</span>
+      <h2 class="section-title">Complete Voice AI Platform</h2>
+      <p class="section-description">All the tools you need to work with voice AI in one place</p>
     </div>
     <div class="row">
       <div class="col-lg-4 col-md-6" *ngFor="let feature of features; let i = index" data-aos="fade-up"
         [attr.data-aos-delay]="(i + 1) * 100">
         <div class="ud-single-feature" (click)="scrollToDemo(feature.type)">
-          <div class="ud-feature-icon"><i [class]="feature.icon"></i></div>
+          <div class="feature-number">{{ i + 1 }}</div>
+          <div class="ud-feature-icon-wrapper">
+            <div class="ud-feature-icon">
+              <i [class]="feature.icon"></i>
+            </div>
+          </div>
           <h3 class="ud-feature-title">{{feature.title}}</h3>
-          <p>{{feature.description}}</p>
-          <span class="badge bg-primary mt-3">{{feature.badge}}</span>
+          <p class="ud-feature-description">{{feature.description}}</p>
+          <div class="ud-feature-footer">
+            <span class="ud-feature-badge">{{feature.badge}}</span>
+            <span class="ud-feature-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </span>
+          </div>
+          <div class="feature-glow"></div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+
+<section id="voice-actors" class="ud-voice-actors">
+  <div class="container">
+    <div class="ud-section-title" data-aos="fade-up">
+      <span>Voice Library</span>
+      <h2>Our Voice Actors</h2>
+      <p>Browse through our diverse collection of professional voice actors</p>
+    </div>
+
+    <!-- Language Filter -->
+    <div class="voice-language-filter" data-aos="fade-up">
+      <div class="filter-label">
+        <i class="fas fa-globe"></i> Filter by Language:
+      </div>
+      <div class="language-buttons">
+        <button class="lang-btn" (click)="selectedLanguage = 'all'" [class.active]="selectedLanguage === 'all'">
+          All Languages
+        </button>
+        <button *ngFor="let lang of languages" class="lang-btn" (click)="selectedLanguage = lang.code"
+          [class.active]="selectedLanguage === lang.code">
+          {{ lang.name }}
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6" *ngFor="let actor of filteredVoiceActors; let i = index"
+        data-aos="fade-up" [attr.data-aos-delay]="(i + 1) * 50">
+        <div class="ud-single-actor" [class.active]="actor.isPlaying">
+          <div class="ud-actor-image">
+            <img [src]="actor.image" [alt]="actor.name" />
+            <!-- Language Badge -->
+            <div class="ud-actor-language-badge">
+              {{ actor.languageName }}
+            </div>
+            <div class="ud-actor-play-btn" (click)="togglePlay(actor)">
+              <i class="fas" [class.fa-play]="!actor.isPlaying" [class.fa-pause]="actor.isPlaying"></i>
+            </div>
+          </div>
+          <div class="ud-actor-info">
+            <h4>{{actor.name}}</h4>
+            <span class="ud-actor-type">{{actor.type}}</span>
+            <div class="ud-actor-language">
+              <i class="fas fa-language"></i>
+              <span>{{actor.languageName}}</span>
+            </div>
+            <div class="ud-actor-categories">
+              <span *ngFor="let cat of actor.categories" class="ud-category-tag">{{cat}}</span>
+            </div>
+            <div class="ud-actor-audio" *ngIf="actor.isPlaying">
+              <audio controls autoplay>
+                <source [src]="actor.audio" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No results message -->
+    <div *ngIf="filteredVoiceActors.length === 0" class="no-results" data-aos="fade-up">
+      <i class="fas fa-microphone-slash"></i>
+      <p>No voice actors available for this language</p>
+    </div>
+  </div>
+</section>
+
 
 <!-- TTS Marketing Section -->
 <section id="tts-marketing" class="tts-marketing-section">
@@ -308,41 +389,7 @@
   </div>
 </section>
 
-<section id="voice-actors" class="ud-voice-actors">
-  <div class="container">
-    <div class="ud-section-title" data-aos="fade-up">
-      <span>Voice Library</span>
-      <h2>Our Voice Actors</h2>
-      <p>Browse through our diverse collection of professional voice actors</p>
-    </div>
-    <div class="row">
-      <div class="col-lg-2 col-md-3 col-sm-4 col-6" *ngFor="let actor of voiceActors; let i = index" data-aos="fade-up"
-        [attr.data-aos-delay]="(i + 1) * 50">
-        <div class="ud-single-actor" [class.active]="actor.isPlaying">
-          <div class="ud-actor-image">
-            <img [src]="actor.image" [alt]="actor.name" />
-            <div class="ud-actor-play-btn" (click)="togglePlay(actor)">
-              <i class="fas" [class.fa-play]="!actor.isPlaying" [class.fa-pause]="actor.isPlaying"></i>
-            </div>
-          </div>
-          <div class="ud-actor-info">
-            <h4>{{actor.name}}</h4>
-            <span class="ud-actor-type">{{actor.type}}</span>
-            <div class="ud-actor-categories">
-              <span *ngFor="let cat of actor.categories" class="ud-category-tag">{{cat}}</span>
-            </div>
-            <div class="ud-actor-audio" *ngIf="actor.isPlaying">
-              <audio controls autoplay>
-                <source [src]="actor.audio" type="audio/mpeg">
-                Your browser does not support the audio element.
-              </audio>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <!-- Video Translation Marketing Section -->
 <section id="video-marketing" class="video-marketing-section">
