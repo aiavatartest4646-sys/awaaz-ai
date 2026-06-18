@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:4200',
     'http://localhost:4000',
-    'https://yourdomain.com' // Add your production domain
+    'http://awaazai.fun // Add your production domain
   ];
 
   const origin = req.headers.origin;
@@ -66,7 +66,7 @@ app.post('/api/auth/social-login', (req, res) => {
 /*
 import http from 'http';
 app.use('/api/*', (req, res) => {
-  const backendUrl = 'http://localhost:8080'; // Your Spring Boot URL
+
   const proxyReq = http.request(backendUrl + req.url, (proxyRes) => {
     res.writeHead(proxyRes.statusCode!, proxyRes.headers);
     proxyRes.pipe(res, { end: true });

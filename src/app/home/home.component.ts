@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
+import { environment } from '../../environment/environment';
 
 @Component({
   selector: 'app-home',
@@ -23,9 +24,9 @@ export class HomeComponent implements OnInit {
   // ========== DROPDOWN PROPERTIES ==========
   dropdownOpen = false;
   userCredits: any = null;
-
+  private apiUrl = `${environment.apiUrl}`;
   // ========== BACKEND API URL ==========
-  private readonly BACKEND_URL = 'http://localhost:8080/api';
+  private readonly BACKEND_URL = this.apiUrl + '/api';
   private readonly API_URL = 'https://shkahmed-backend.hf.space';
 
   @ViewChild('originalVideo') originalVideo!: ElementRef<HTMLVideoElement>;

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { environment } from '../../environment/environment';
 
 @Component({
   selector: 'app-login',
@@ -59,8 +60,9 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   // Forms
   loginForm: FormGroup;
 
+  private url = `${environment.apiUrl}`;
   // API URL
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = this.url + '/api/auth';
 
   // Countdown for auto-hide messages
   private messageTimeout: any;
@@ -218,7 +220,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           this.loading = false;
 
           if (error.status === 0) {
-            this.showError('Cannot connect to server. Please make sure the backend is running on port 8080');
+            this.showError('Cannot connect to server. Please make sure the backend is running on por');
           } else if (error.status === 401) {
             this.showError('Authentication failed. Please try again.');
           } else {
