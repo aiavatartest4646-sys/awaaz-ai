@@ -308,6 +308,42 @@
   </div>
 </section>
 
+<section id="voice-actors" class="ud-voice-actors">
+  <div class="container">
+    <div class="ud-section-title" data-aos="fade-up">
+      <span>Voice Library</span>
+      <h2>Our Voice Actors</h2>
+      <p>Browse through our diverse collection of professional voice actors</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6" *ngFor="let actor of voiceActors; let i = index" data-aos="fade-up"
+        [attr.data-aos-delay]="(i + 1) * 50">
+        <div class="ud-single-actor" [class.active]="actor.isPlaying">
+          <div class="ud-actor-image">
+            <img [src]="actor.image" [alt]="actor.name" />
+            <div class="ud-actor-play-btn" (click)="togglePlay(actor)">
+              <i class="fas" [class.fa-play]="!actor.isPlaying" [class.fa-pause]="actor.isPlaying"></i>
+            </div>
+          </div>
+          <div class="ud-actor-info">
+            <h4>{{actor.name}}</h4>
+            <span class="ud-actor-type">{{actor.type}}</span>
+            <div class="ud-actor-categories">
+              <span *ngFor="let cat of actor.categories" class="ud-category-tag">{{cat}}</span>
+            </div>
+            <div class="ud-actor-audio" *ngIf="actor.isPlaying">
+              <audio controls autoplay>
+                <source [src]="actor.audio" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Video Translation Marketing Section -->
 <section id="video-marketing" class="video-marketing-section">
   <div class="container">
@@ -514,6 +550,9 @@
     </div>
   </div>
 </section>
+
+
+
 
 <!-- Contact Section -->
 <section id="contact" class="demo-section">

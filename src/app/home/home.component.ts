@@ -1139,4 +1139,133 @@ export class HomeComponent implements OnInit {
     }
     alert('📅 Subscribe to Monthly Plan\n\n1,800 Credits per month\n$5.99 / month\n\nRedirecting to payment...');
   }
+
+
+
+
+  voiceActors = [
+    {
+      id: 1,
+      name: 'Sarah Johnson',
+      type: 'Female Voice',
+      image: 'assets/1.jpeg',
+      audio: 'assets/1.wav',
+      categories: ['Voice Over', 'Narration', 'Commercial'],
+      isPlaying: false
+    },
+    {
+      id: 2,
+      name: 'James Anderson',
+      type: 'Male Voice',
+      image: 'assets/2.jpeg',
+      audio: 'assets/2.wav',
+      categories: ['Business', 'Corporate', 'Narration'],
+      isPlaying: false
+    },
+    {
+      id: 3,
+      name: 'Emily Roberts',
+      type: 'Kid Voice',
+      image: 'assets/3.jpeg',
+      audio: 'assets/3.mp3',
+      categories: ['Kids', 'Animation', 'Cartoon'],
+      isPlaying: false
+    },
+    {
+      id: 4,
+      name: 'Margaret Wilson',
+      type: 'Old Woman Voice',
+      image: 'assets/4.jpeg',
+      audio: 'assets/amanda.wav',
+      categories: ['Storytelling', 'Narration', 'Character'],
+      isPlaying: false
+    },
+    {
+      id: 5,
+      name: 'Robert Thompson',
+      type: 'Old Man Voice',
+      image: 'assets/5.jpeg',
+      audio: 'assets/5.wav',
+      categories: ['Storytelling', 'Narration', 'Character'],
+      isPlaying: false
+    },
+    {
+      id: 6,
+      name: 'David Kim',
+      type: 'Business Voice',
+      image: 'assets/6.jpeg',
+      audio: 'assets/6.wav',
+      categories: ['Corporate', 'Business', 'Professional'],
+      isPlaying: false
+    },
+    {
+      id: 7,
+      name: 'Lisa Martinez',
+      type: 'Female Voice',
+      image: 'assets/7.jpeg',
+      audio: 'assets/7.wav',
+      categories: ['Commercial', 'Voice Over', 'Promo'],
+      isPlaying: false
+    },
+    {
+      id: 8,
+      name: 'Michael Brown',
+      type: 'Male Voice',
+      image: 'assets/8.jpeg',
+      audio: 'assets/8.mp3',
+      categories: ['Narration', 'Documentary', 'Commercial'],
+      isPlaying: false
+    },
+    {
+      id: 9,
+      name: 'Sophie Chen',
+      type: 'Kid Voice',
+      image: 'assets/9.jpeg',
+      audio: 'assets/9.mp3',
+      categories: ['Kids', 'Animation', 'Educational'],
+      isPlaying: false
+    },
+    {
+      id: 10,
+      name: 'Barbara Smith',
+      type: 'Old Woman Voice',
+      image: 'assets/10.jpeg',
+      audio: 'assets/10.wav',
+      categories: ['Storytelling', 'Narration', 'Character'],
+      isPlaying: false
+    },
+    {
+      id: 11,
+      name: 'William Davis',
+      type: 'Old Man Voice',
+      image: 'assets/11.jpeg',
+      audio: 'assets/11.mp3',
+      categories: ['Storytelling', 'Narration', 'Character'],
+      isPlaying: false
+    },
+    {
+      id: 12,
+      name: 'Jennifer Park',
+      type: 'Business Voice',
+      image: 'assets/12.jpeg',
+      audio: 'assets/12.mp3',
+      categories: ['Corporate', 'Business', 'Professional'],
+      isPlaying: false
+    }
+  ];
+
+  togglePlay(actor: any) {
+    // Stop all other actors
+    this.voiceActors.forEach(a => {
+      if (a.id !== actor.id) {
+        a.isPlaying = false;
+      }
+    });
+
+    // Toggle current actor
+    actor.isPlaying = !actor.isPlaying;
+  }
+
+
+
 }
